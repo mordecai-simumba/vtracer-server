@@ -40,11 +40,9 @@ def preprocess_image(input_path):
     )
 
     # Contrast enhancement
-    enhancer =
-        ImageEnhance.Contrast(image)
+    enhancer = ImageEnhance.Contrast(image)
 
-    image =
-        enhancer.enhance(1.4)
+    image = enhancer.enhance(1.4)
 
     # Edge enhancement
     image = image.filter(
@@ -66,21 +64,16 @@ def vectorize():
     if "image" not in request.files:
 
         return jsonify({
-            "error":
-                "No image uploaded"
+            "error": "No image uploaded"
         }), 400
 
-    image =
-        request.files["image"]
+    image = request.files["image"]
 
-    uid =
-        str(uuid.uuid4())
+    uid = str(uuid.uuid4())
 
-    input_path =
-        f"{UPLOAD_FOLDER}/{uid}.png"
+    input_path = f"{UPLOAD_FOLDER}/{uid}.png"
 
-    output_path =
-        f"{UPLOAD_FOLDER}/{uid}.svg"
+    output_path = f"{UPLOAD_FOLDER}/{uid}.svg"
 
     image.save(input_path)
 
