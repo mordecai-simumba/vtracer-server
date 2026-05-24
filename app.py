@@ -23,30 +23,30 @@ def preprocess_image(input_path):
 
     image = image.convert("RGB")
 
-    # Higher resolution preservation
-    max_size = 1800
+    # Preserve more detail
+    max_size = 2200
 
     image.thumbnail(
         (max_size, max_size)
     )
 
-    # Strong sharpening
+    # Increase sharpness heavily
+    sharpness =
+        ImageEnhance.Sharpness(image)
+
+    image =
+        sharpness.enhance(2.8)
+
+    # Strong contrast enhancement
+    contrast =
+        ImageEnhance.Contrast(image)
+
+    image =
+        contrast.enhance(1.6)
+
+    # Slight edge enhancement
     image = image.filter(
-        ImageFilter.SHARPEN
-    )
-
-    image = image.filter(
-        ImageFilter.SHARPEN
-    )
-
-    # Contrast enhancement
-    enhancer = ImageEnhance.Contrast(image)
-
-    image = enhancer.enhance(1.4)
-
-    # Edge enhancement
-    image = image.filter(
-        ImageFilter.EDGE_ENHANCE
+        ImageFilter.EDGE_ENHANCE_MORE
     )
 
     image.save(input_path)
@@ -64,16 +64,21 @@ def vectorize():
     if "image" not in request.files:
 
         return jsonify({
-            "error": "No image uploaded"
+            "error":
+                "No image uploaded"
         }), 400
 
-    image = request.files["image"]
+    image =
+        request.files["image"]
 
-    uid = str(uuid.uuid4())
+    uid =
+        str(uuid.uuid4())
 
-    input_path = f"{UPLOAD_FOLDER}/{uid}.png"
+    input_path =
+        f"{UPLOAD_FOLDER}/{uid}.png"
 
-    output_path = f"{UPLOAD_FOLDER}/{uid}.svg"
+    output_path =
+        f"{UPLOAD_FOLDER}/{uid}.svg"
 
     image.save(input_path)
 
@@ -98,13 +103,13 @@ def vectorize():
                 "spline",
 
                 "--filter_speckle",
-                "2",
+                "1",
 
                 "--color_precision",
-                "8",
+                "10",
 
                 "--corner_threshold",
-                "75"
+                "95"
             ],
             check=True
         )
@@ -150,7 +155,7 @@ def vectorize():
 @app.route("/")
 def home():
 
-    return "Professional VTracer Server Running"
+    return "Professional HD VTracer Server Running"
 
 # =====================================================
 # START SERVER
