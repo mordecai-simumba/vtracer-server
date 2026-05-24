@@ -1,0 +1,5 @@
+services:
+  - type: web
+    name: vtracer-server
+    env: docker
+    plan: free
