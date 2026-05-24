@@ -8,10 +8,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = "temp"
 
-os.makedirs(
-    UPLOAD_FOLDER,
-    exist_ok=True
-)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # =====================================================
 # IMAGE PREPROCESSING
@@ -26,26 +23,18 @@ def preprocess_image(input_path):
     # Intelligent resize
     max_size = 1200
 
-    image.thumbnail(
-        (max_size, max_size)
-    )
+    image.thumbnail((max_size, max_size))
 
     # Sharpen image
-    image = image.filter(
-        ImageFilter.SHARPEN
-    )
+    image = image.filter(ImageFilter.SHARPEN)
 
     # Contrast enhancement
-    enhancer =
-        ImageEnhance.Contrast(image)
+    enhancer = ImageEnhance.Contrast(image)
 
-    image =
-        enhancer.enhance(1.25)
+    image = enhancer.enhance(1.25)
 
     # Slight smoothing
-    image = image.filter(
-        ImageFilter.SMOOTH
-    )
+    image = image.filter(ImageFilter.SMOOTH)
 
     image.save(input_path)
 
@@ -53,30 +42,22 @@ def preprocess_image(input_path):
 # VECTORIZE ENDPOINT
 # =====================================================
 
-@app.route(
-    "/vectorize",
-    methods=["POST"]
-)
+@app.route("/vectorize", methods=["POST"])
 def vectorize():
 
     if "image" not in request.files:
 
         return jsonify({
-            "error":
-                "No image uploaded"
+            "error": "No image uploaded"
         }), 400
 
-    image =
-        request.files["image"]
+    image = request.files["image"]
 
-    uid =
-        str(uuid.uuid4())
+    uid = str(uuid.uuid4())
 
-    input_path =
-        f"{UPLOAD_FOLDER}/{uid}.png"
+    input_path = f"{UPLOAD_FOLDER}/{uid}.png"
 
-    output_path =
-        f"{UPLOAD_FOLDER}/{uid}.svg"
+    output_path = f"{UPLOAD_FOLDER}/{uid}.svg"
 
     image.save(input_path)
 
