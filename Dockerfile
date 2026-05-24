@@ -4,10 +4,10 @@ RUN apt-get update && \
     apt-get install -y curl unzip && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -L https://github.com/visioncortex/vtracer/releases/download/v0.6.11/vtracer-linux.zip -o vtracer.zip && \
+RUN curl -L https://github.com/visioncortex/vtracer/releases/download/v0.6.4/vtracer-linux-x64.zip -o vtracer.zip && \
     unzip vtracer.zip && \
+    chmod +x vtracer && \
     mv vtracer /usr/local/bin/vtracer && \
-    chmod +x /usr/local/bin/vtracer && \
     rm vtracer.zip
 
 WORKDIR /app
