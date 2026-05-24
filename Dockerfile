@@ -1,14 +1,21 @@
 FROM python:3.11-slim
 
 RUN apt-get update && \
-    apt-get install -y curl unzip && \
+    apt-get install -y \
+    curl \
+    git \
+    build-essential \
+    pkg-config \
+    libssl-dev && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -L https://github.com/visioncortex/vtracer/releases/download/v0.6.4/vtracer-linux-x64.zip -o vtracer.zip && \
-    unzip vtracer.zip && \
-    chmod +x vtracer && \
-    mv vtracer /usr/local/bin/vtracer && \
-    rm vtracer.zip
+# Install Rust
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+# Install VTracer from source
+RUN cargo install vtracer
 
 WORKDIR /app
 
