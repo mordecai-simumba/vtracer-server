@@ -8,8 +8,14 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = "temp"
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(
+    UPLOAD_FOLDER,
+    exist_ok=True
+)
 
+# =====================================================
+# IMAGE PREPROCESSING
+# =====================================================
 
 def preprocess_image(input_path):
 
@@ -17,20 +23,24 @@ def preprocess_image(input_path):
 
     image = image.convert("RGB")
 
-    # Resize intelligently
+    # Intelligent resize
     max_size = 1200
 
-    image.thumbnail((max_size, max_size))
+    image.thumbnail(
+        (max_size, max_size)
+    )
 
-    # Slight sharpening
+    # Sharpen image
     image = image.filter(
         ImageFilter.SHARPEN
     )
 
-    # Contrast boost
-    enhancer = ImageEnhance.Contrast(image)
+    # Contrast enhancement
+    enhancer =
+        ImageEnhance.Contrast(image)
 
-    image = enhancer.enhance(1.25)
+    image =
+        enhancer.enhance(1.25)
 
     # Slight smoothing
     image = image.filter(
@@ -39,77 +49,98 @@ def preprocess_image(input_path):
 
     image.save(input_path)
 
+# =====================================================
+# VECTORIZE ENDPOINT
+# =====================================================
 
-@app.route("/vectorize", methods=["POST"])
+@app.route(
+    "/vectorize",
+    methods=["POST"]
+)
 def vectorize():
 
     if "image" not in request.files:
 
         return jsonify({
-            "error": "No image uploaded"
+            "error":
+                "No image uploaded"
         }), 400
 
-    image = request.files["image"]
+    image =
+        request.files["image"]
 
-    uid = str(uuid.uuid4())
+    uid =
+        str(uuid.uuid4())
 
-    input_path = f"{UPLOAD_FOLDER}/{uid}.png"
+    input_path =
+        f"{UPLOAD_FOLDER}/{uid}.png"
 
-    output_path = f"{UPLOAD_FOLDER}/{uid}.svg"
+    output_path =
+        f"{UPLOAD_FOLDER}/{uid}.svg"
 
     image.save(input_path)
 
     try:
 
+        # =====================================================
+        # PREPROCESS IMAGE
+        # =====================================================
+
         preprocess_image(input_path)
+
+        # =====================================================
+        # RUN VTRACER
+        # =====================================================
 
         subprocess.run(
             [
                 "vtracer",
+
+                "--input",
                 input_path,
-                "-o",
+
+                "--output",
                 output_path,
 
                 "--colormode",
                 "color",
 
-                "--hierarchical",
-
-                "stacked",
-
                 "--mode",
                 "spline",
 
                 "--filter_speckle",
-                "4",
-
-                "--color_precision",
-                "6",
-
-                "--layer_difference",
-                "12",
-
-                "--corner_threshold",
-                "60",
-
-                "--length_threshold",
-                "4.0",
-
-                "--max_iterations",
-                "10",
-
-                "--splice_threshold",
-                "45"
+                "4"
             ],
             check=True
         )
 
-        with open(output_path, "r") as file:
+        # =====================================================
+        # READ SVG
+        # =====================================================
+
+        with open(
+            output_path,
+            "r",
+            encoding="utf-8"
+        ) as file:
 
             svg = file.read()
 
-        os.remove(input_path)
-        os.remove(output_path)
+        # =====================================================
+        # CLEAN TEMP FILES
+        # =====================================================
+
+        if os.path.exists(input_path):
+
+            os.remove(input_path)
+
+        if os.path.exists(output_path):
+
+            os.remove(output_path)
+
+        # =====================================================
+        # RETURN SVG
+        # =====================================================
 
         return jsonify({
             "svg": svg
@@ -117,16 +148,32 @@ def vectorize():
 
     except Exception as e:
 
+        # Cleanup on failure
+
+        if os.path.exists(input_path):
+
+            os.remove(input_path)
+
+        if os.path.exists(output_path):
+
+            os.remove(output_path)
+
         return jsonify({
             "error": str(e)
         }), 500
 
+# =====================================================
+# HOME ROUTE
+# =====================================================
 
 @app.route("/")
 def home():
 
     return "Professional VTracer Server Running"
 
+# =====================================================
+# START SERVER
+# =====================================================
 
 if __name__ == "__main__":
 
