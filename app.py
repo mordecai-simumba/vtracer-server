@@ -20,17 +20,17 @@ def preprocess_image(input_path):
 
     image = image.convert("RGB")
 
-    # Preserve more detail
+    # Preserve detail
     max_size = 2200
 
     image.thumbnail((max_size, max_size))
 
-    # Strong sharpness enhancement
+    # Strong sharpness
     sharpness = ImageEnhance.Sharpness(image)
 
     image = sharpness.enhance(2.8)
 
-    # Strong contrast enhancement
+    # Strong contrast
     contrast = ImageEnhance.Contrast(image)
 
     image = contrast.enhance(1.6)
@@ -67,7 +67,11 @@ def vectorize():
 
         preprocess_image(input_path)
 
-        subprocess.run(
+        # =====================================================
+        # SAFE VTRACER COMMAND
+        # =====================================================
+
+        result = subprocess.run(
             [
                 "vtracer",
 
@@ -81,19 +85,25 @@ def vectorize():
                 "color",
 
                 "--mode",
-                "spline",
-
-                "--filter_speckle",
-                "1",
-
-                "--color_precision",
-                "10",
-
-                "--corner_threshold",
-                "95"
+                "spline"
             ],
-            check=True
+            capture_output=True,
+            text=True
         )
+
+        # =====================================================
+        # CHECK FOR ERRORS
+        # =====================================================
+
+        if result.returncode != 0:
+
+            return jsonify({
+                "error": result.stderr
+            }), 500
+
+        # =====================================================
+        # READ SVG
+        # =====================================================
 
         with open(
             output_path,
@@ -102,6 +112,10 @@ def vectorize():
         ) as file:
 
             svg = file.read()
+
+        # =====================================================
+        # CLEAN TEMP FILES
+        # =====================================================
 
         if os.path.exists(input_path):
             os.remove(input_path)
