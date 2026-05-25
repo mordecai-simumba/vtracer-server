@@ -8,10 +8,7 @@ app = Flask(__name__)
 
 UPLOAD_FOLDER = "temp"
 
-os.makedirs(
-    UPLOAD_FOLDER,
-    exist_ok=True
-)
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # =====================================================
 # IMAGE PREPROCESSING
@@ -26,28 +23,20 @@ def preprocess_image(input_path):
     # Preserve more detail
     max_size = 2200
 
-    image.thumbnail(
-        (max_size, max_size)
-    )
+    image.thumbnail((max_size, max_size))
 
-    # Increase sharpness heavily
-    sharpness =
-        ImageEnhance.Sharpness(image)
+    # Strong sharpness enhancement
+    sharpness = ImageEnhance.Sharpness(image)
 
-    image =
-        sharpness.enhance(2.8)
+    image = sharpness.enhance(2.8)
 
     # Strong contrast enhancement
-    contrast =
-        ImageEnhance.Contrast(image)
+    contrast = ImageEnhance.Contrast(image)
 
-    image =
-        contrast.enhance(1.6)
+    image = contrast.enhance(1.6)
 
-    # Slight edge enhancement
-    image = image.filter(
-        ImageFilter.EDGE_ENHANCE_MORE
-    )
+    # Edge enhancement
+    image = image.filter(ImageFilter.EDGE_ENHANCE_MORE)
 
     image.save(input_path)
 
@@ -55,30 +44,22 @@ def preprocess_image(input_path):
 # VECTORIZE ENDPOINT
 # =====================================================
 
-@app.route(
-    "/vectorize",
-    methods=["POST"]
-)
+@app.route("/vectorize", methods=["POST"])
 def vectorize():
 
     if "image" not in request.files:
 
         return jsonify({
-            "error":
-                "No image uploaded"
+            "error": "No image uploaded"
         }), 400
 
-    image =
-        request.files["image"]
+    image = request.files["image"]
 
-    uid =
-        str(uuid.uuid4())
+    uid = str(uuid.uuid4())
 
-    input_path =
-        f"{UPLOAD_FOLDER}/{uid}.png"
+    input_path = f"{UPLOAD_FOLDER}/{uid}.png"
 
-    output_path =
-        f"{UPLOAD_FOLDER}/{uid}.svg"
+    output_path = f"{UPLOAD_FOLDER}/{uid}.svg"
 
     image.save(input_path)
 
@@ -123,11 +104,9 @@ def vectorize():
             svg = file.read()
 
         if os.path.exists(input_path):
-
             os.remove(input_path)
 
         if os.path.exists(output_path):
-
             os.remove(output_path)
 
         return jsonify({
@@ -137,11 +116,9 @@ def vectorize():
     except Exception as e:
 
         if os.path.exists(input_path):
-
             os.remove(input_path)
 
         if os.path.exists(output_path):
-
             os.remove(output_path)
 
         return jsonify({
